@@ -1,11 +1,14 @@
 
+import 'dart:async';
 import 'package:flutter/material.dart';
+
+import 'models/quiz_question.dart';
+import 'data/question_bank.dart';
 
 void main() {
   runApp(const QuizByteApp());
 }
 
-// MAIN APPLICATION
 class QuizByteApp extends StatelessWidget {
   const QuizByteApp({super.key});
 
@@ -15,13 +18,13 @@ class QuizByteApp extends StatelessWidget {
       title: 'QuizByte',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.blue,
-        ),
         useMaterial3: true,
-        scaffoldBackgroundColor: const Color(0xFFF7F9FC),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF2563EB),
+        ),
+        scaffoldBackgroundColor: const Color(0xFFF5F7FC),
         appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.blue,
+          backgroundColor: Color(0xFF2563EB),
           foregroundColor: Colors.white,
           centerTitle: true,
         ),
@@ -31,49 +34,7 @@ class QuizByteApp extends StatelessWidget {
   }
 }
 
-// QUESTION MODEL
-class QuizQuestion {
-  final String question;
-  final List<String> options;
-  final int correctAnswer;
-
-  const QuizQuestion({
-    required this.question,
-    required this.options,
-    required this.correctAnswer,
-  });
-}
-
-// SAMPLE QUESTION BANK
-const List<QuizQuestion> sampleQuestions = [
-  QuizQuestion(
-    question: 'What is the capital of Bangladesh?',
-    options: ['Chittagong', 'Dhaka', 'Sylhet', 'Khulna'],
-    correctAnswer: 1,
-  ),
-  QuizQuestion(
-    question: 'Which planet is known as the Red Planet?',
-    options: ['Venus', 'Jupiter', 'Mars', 'Saturn'],
-    correctAnswer: 2,
-  ),
-  QuizQuestion(
-    question: 'How many days are there in a leap year?',
-    options: ['365', '364', '366', '360'],
-    correctAnswer: 2,
-  ),
-  QuizQuestion(
-    question: 'Which programming language is used by Flutter?',
-    options: ['Java', 'Python', 'Dart', 'C++'],
-    correctAnswer: 2,
-  ),
-  QuizQuestion(
-    question: 'What is 12 × 8?',
-    options: ['84', '96', '108', '88'],
-    correctAnswer: 1,
-  ),
-];
-
-// HOME PAGE
+// HOME SCREEN
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -82,13 +43,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final TextEditingController nameController =
-  TextEditingController();
+  final nameController = TextEditingController();
 
   String selectedCategory = 'General Knowledge';
   String selectedDifficulty = 'Easy';
 
-  final List<String> categories = [
+  final categories = [
     'General Knowledge',
     'Science',
     'Technology',
@@ -96,11 +56,7 @@ class _HomePageState extends State<HomePage> {
     'Mathematics',
   ];
 
-  final List<String> difficulties = [
-    'Easy',
-    'Medium',
-    'Hard',
-  ];
+  final difficulties = ['Easy', 'Medium', 'Hard'];
 
   @override
   void dispose() {
@@ -115,7 +71,6 @@ class _HomePageState extends State<HomePage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please enter your name first!'),
-          backgroundColor: Colors.red,
         ),
       );
       return;
@@ -124,7 +79,7 @@ class _HomePageState extends State<HomePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => QuizPage(
+        builder: (_) => QuizPage(
           name: name,
           category: selectedCategory,
           difficulty: selectedDifficulty,
@@ -144,112 +99,158 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(20),
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 420),
+            constraints: const BoxConstraints(maxWidth: 460),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Icon(
-                  Icons.quiz_rounded,
-                  size: 80,
-                  color: Colors.blue,
+                Container(
+                  padding: const EdgeInsets.all(26),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [
+                        Color(0xFF2563EB),
+                        Color(0xFF60A5FA),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                  child: const Column(
+                    children: [
+                      Icon(
+                        Icons.psychology_rounded,
+                        color: Colors.white,
+                        size: 68,
+                      ),
+                      SizedBox(height: 12),
+                      Text(
+                        'Welcome to QuizByte!',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        'Challenge yourself. Learn something new.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 22),
+                Card(
+                  elevation: 0,
+                  color: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const Text(
+                          'Set Up Your Quiz',
+                          style: TextStyle(
+                            fontSize: 21,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        TextField(
+                          controller: nameController,
+                          decoration: const InputDecoration(
+                            labelText: 'Your Name',
+                            prefixIcon: Icon(Icons.person_outline),
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+                        DropdownButtonFormField<String>(
+                          initialValue: selectedCategory,
+                          isExpanded: true,
+                          decoration: const InputDecoration(
+                            labelText: 'Quiz Category',
+                            prefixIcon: Icon(Icons.category_outlined),
+                            border: OutlineInputBorder(),
+                          ),
+                          items: categories.map((category) {
+                            return DropdownMenuItem(
+                              value: category,
+                              child: Text(category),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            if (value != null) {
+                              setState(() {
+                                selectedCategory = value;
+                              });
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 18),
+                        DropdownButtonFormField<String>(
+                          initialValue: selectedDifficulty,
+                          decoration: const InputDecoration(
+                            labelText: 'Difficulty Level',
+                            prefixIcon: Icon(Icons.speed),
+                            border: OutlineInputBorder(),
+                          ),
+                          items: difficulties.map((difficulty) {
+                            return DropdownMenuItem(
+                              value: difficulty,
+                              child: Text(difficulty),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            if (value != null) {
+                              setState(() {
+                                selectedDifficulty = value;
+                              });
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 18),
+                        const Row(
+                          children: [
+                            Icon(
+                              Icons.timer_outlined,
+                              color: Colors.blue,
+                            ),
+                            SizedBox(width: 8),
+                            Text('Quiz Duration: 5 minutes'),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        FilledButton.icon(
+                          onPressed: startQuiz,
+                          icon: const Icon(Icons.play_arrow_rounded),
+                          label: const Text('Start Quiz'),
+                          style: FilledButton.styleFrom(
+                            padding: const EdgeInsets.all(16),
+                            textStyle: const TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 16),
                 const Text(
-                  'Welcome to QuizByte!',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Test your knowledge and improve your skills.',
+                  'Learn • Practice • Improve',
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.grey),
-                ),
-                const SizedBox(height: 30),
-
-                TextField(
-                  controller: nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Enter Your Name',
-                    prefixIcon: Icon(Icons.person),
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-
-                const SizedBox(height: 20),
-
-                DropdownButtonFormField<String>(
-                  initialValue: selectedCategory,
-                  isExpanded: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Select Quiz Category',
-                    prefixIcon: Icon(Icons.category),
-                    border: OutlineInputBorder(),
-                  ),
-                  items: categories.map((category) {
-                    return DropdownMenuItem(
-                      value: category,
-                      child: Text(category),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    if (value != null) {
-                      setState(() {
-                        selectedCategory = value;
-                      });
-                    }
-                  },
-                ),
-
-                const SizedBox(height: 20),
-
-                DropdownButtonFormField<String>(
-                  initialValue: selectedDifficulty,
-                  decoration: const InputDecoration(
-                    labelText: 'Select Difficulty Level',
-                    prefixIcon: Icon(Icons.speed),
-                    border: OutlineInputBorder(),
-                  ),
-                  items: difficulties.map((difficulty) {
-                    return DropdownMenuItem(
-                      value: difficulty,
-                      child: Text(difficulty),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    if (value != null) {
-                      setState(() {
-                        selectedDifficulty = value;
-                      });
-                    }
-                  },
-                ),
-
-                const SizedBox(height: 30),
-
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: startQuiz,
-                    icon: const Icon(Icons.play_arrow_rounded),
-                    label: const Text('Start Quiz'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 16,
-                      ),
-                      textStyle: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
                 ),
               ],
             ),
@@ -260,7 +261,7 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-// QUIZ PAGE
+// QUIZ SCREEN
 class QuizPage extends StatefulWidget {
   final String name;
   final String category;
@@ -278,28 +279,60 @@ class QuizPage extends StatefulWidget {
 }
 
 class _QuizPageState extends State<QuizPage> {
+  static const int quizDuration = 300;
+
   int currentQuestion = 0;
+  int remainingSeconds = quizDuration;
+  Timer? timer;
+  bool submitted = false;
 
-  final List<int?> selectedAnswers =
-  List<int?>.filled(sampleQuestions.length, null);
+  late final List<int?> selectedAnswers;
 
-  void nextQuestion() {
-    if (currentQuestion < sampleQuestions.length - 1) {
-      setState(() {
-        currentQuestion++;
-      });
-    }
+  @override
+  void initState() {
+    super.initState();
+    selectedAnswers =
+    List<int?>.filled(sampleQuestions.length, null);
+    startTimer();
   }
 
-  void previousQuestion() {
-    if (currentQuestion > 0) {
-      setState(() {
-        currentQuestion--;
-      });
-    }
+  void startTimer() {
+    timer = Timer.periodic(
+      const Duration(seconds: 1),
+          (timer) {
+        if (!mounted || submitted) {
+          timer.cancel();
+          return;
+        }
+
+        if (remainingSeconds > 1) {
+          setState(() {
+            remainingSeconds--;
+          });
+        } else {
+          setState(() {
+            remainingSeconds = 0;
+          });
+          submitQuiz(timeExpired: true);
+        }
+      },
+    );
   }
 
-  void submitQuiz() {
+  String get formattedTime {
+    final minutes = remainingSeconds ~/ 60;
+    final seconds = remainingSeconds % 60;
+
+    return '${minutes.toString().padLeft(2, '0')}:'
+        '${seconds.toString().padLeft(2, '0')}';
+  }
+
+  void submitQuiz({bool timeExpired = false}) {
+    if (submitted) return;
+
+    submitted = true;
+    timer?.cancel();
+
     int score = 0;
 
     for (int i = 0; i < sampleQuestions.length; i++) {
@@ -312,16 +345,23 @@ class _QuizPageState extends State<QuizPage> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => ResultPage(
+        builder: (_) => ResultPage(
           name: widget.name,
           category: widget.category,
           difficulty: widget.difficulty,
           score: score,
           questions: sampleQuestions,
           selectedAnswers: List<int?>.from(selectedAnswers),
+          timeExpired: timeExpired,
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -336,26 +376,65 @@ class _QuizPageState extends State<QuizPage> {
       ),
       body: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 600),
+          constraints: const BoxConstraints(maxWidth: 650),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Card(
+                  color: remainingSeconds <= 60
+                      ? Colors.red.shade50
+                      : Colors.blue.shade50,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      mainAxisAlignment:
+                      MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Time Remaining',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.timer,
+                              color: remainingSeconds <= 60
+                                  ? Colors.red
+                                  : Colors.blue,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              formattedTime,
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: remainingSeconds <= 60
+                                    ? Colors.red
+                                    : Colors.blue,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
                 Text(
                   'Player: ${widget.name}',
                   style: const TextStyle(
-                    fontSize: 17,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 5),
                 Text(
                   '${widget.category} • ${widget.difficulty}',
                   style: const TextStyle(color: Colors.grey),
                 ),
                 const SizedBox(height: 20),
-
                 Text(
                   'Question ${currentQuestion + 1} of '
                       '${sampleQuestions.length}',
@@ -364,25 +443,20 @@ class _QuizPageState extends State<QuizPage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 12),
-
+                const SizedBox(height: 10),
                 LinearProgressIndicator(
                   value: (currentQuestion + 1) /
                       sampleQuestions.length,
                   minHeight: 8,
                   borderRadius: BorderRadius.circular(10),
                 ),
-
-                const SizedBox(height: 12),
-
+                const SizedBox(height: 10),
                 Text(
                   '$answeredCount of '
                       '${sampleQuestions.length} answered',
                   style: const TextStyle(color: Colors.grey),
                 ),
-
-                const SizedBox(height: 30),
-
+                const SizedBox(height: 25),
                 Text(
                   question.question,
                   style: const TextStyle(
@@ -390,16 +464,13 @@ class _QuizPageState extends State<QuizPage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-
-                const SizedBox(height: 20),
-
+                const SizedBox(height: 18),
                 Expanded(
                   child: ListView.builder(
                     itemCount: question.options.length,
                     itemBuilder: (context, index) {
                       final isSelected =
-                          selectedAnswers[currentQuestion] ==
-                              index;
+                          selectedAnswers[currentQuestion] == index;
 
                       return Card(
                         color: isSelected
@@ -408,12 +479,8 @@ class _QuizPageState extends State<QuizPage> {
                         child: RadioListTile<int>(
                           title: Text(question.options[index]),
                           value: index,
-                          // Uses RadioListTile's existing API.
-                          // May show a deprecation warning
-                          // on newer Flutter versions.
                           groupValue:
                           selectedAnswers[currentQuestion],
-                          activeColor: Colors.blue,
                           onChanged: (value) {
                             setState(() {
                               selectedAnswers[currentQuestion] =
@@ -425,36 +492,32 @@ class _QuizPageState extends State<QuizPage> {
                     },
                   ),
                 ),
-
-                const SizedBox(height: 10),
-
                 Row(
                   children: [
                     if (currentQuestion > 0)
-                      ElevatedButton.icon(
-                        onPressed: previousQuestion,
-                        icon: const Icon(Icons.arrow_back),
-                        label: const Text('Previous'),
+                      OutlinedButton(
+                        onPressed: () {
+                          setState(() {
+                            currentQuestion--;
+                          });
+                        },
+                        child: const Text('Previous'),
                       ),
-
                     const Spacer(),
-
                     if (currentQuestion <
                         sampleQuestions.length - 1)
-                      ElevatedButton.icon(
-                        onPressed: nextQuestion,
-                        icon: const Icon(Icons.arrow_forward),
-                        label: const Text('Next'),
+                      FilledButton(
+                        onPressed: () {
+                          setState(() {
+                            currentQuestion++;
+                          });
+                        },
+                        child: const Text('Next'),
                       )
                     else
-                      ElevatedButton.icon(
-                        onPressed: submitQuiz,
-                        icon: const Icon(Icons.check),
-                        label: const Text('Submit'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          foregroundColor: Colors.white,
-                        ),
+                      FilledButton(
+                        onPressed: () => submitQuiz(),
+                        child: const Text('Submit Quiz'),
                       ),
                   ],
                 ),
@@ -467,7 +530,7 @@ class _QuizPageState extends State<QuizPage> {
   }
 }
 
-// RESULT PAGE
+// RESULT SCREEN
 class ResultPage extends StatelessWidget {
   final String name;
   final String category;
@@ -475,6 +538,7 @@ class ResultPage extends StatelessWidget {
   final int score;
   final List<QuizQuestion> questions;
   final List<int?> selectedAnswers;
+  final bool timeExpired;
 
   const ResultPage({
     super.key,
@@ -484,18 +548,21 @@ class ResultPage extends StatelessWidget {
     required this.score,
     required this.questions,
     required this.selectedAnswers,
+    required this.timeExpired,
   });
 
   @override
   Widget build(BuildContext context) {
     final total = questions.length;
     final percentage = score / total * 100;
-    final wrongAnswers = selectedAnswers.asMap().entries
+
+    final wrong = selectedAnswers.asMap().entries
         .where((entry) =>
     entry.value != null &&
         entry.value != questions[entry.key].correctAnswer)
         .length;
-    final skippedAnswers =
+
+    final skipped =
         selectedAnswers.where((answer) => answer == null).length;
 
     return Scaffold(
@@ -507,62 +574,53 @@ class ResultPage extends StatelessWidget {
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 450),
+            constraints: const BoxConstraints(maxWidth: 460),
             child: Column(
               children: [
-                const Icon(
-                  Icons.emoji_events,
-                  size: 90,
-                  color: Colors.orange,
+                Icon(
+                  timeExpired
+                      ? Icons.timer_off
+                      : Icons.emoji_events,
+                  color: timeExpired
+                      ? Colors.red
+                      : Colors.orange,
+                  size: 80,
                 ),
                 const SizedBox(height: 16),
-
-                const Text(
-                  'Quiz Completed!',
-                  style: TextStyle(
+                Text(
+                  timeExpired
+                      ? 'Time is Up!'
+                      : 'Quiz Completed!',
+                  style: const TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                const SizedBox(height: 12),
+                Text('Well done, $name!'),
                 const SizedBox(height: 10),
-
-                Text(
-                  'Well done, $name!',
-                  style: const TextStyle(fontSize: 18),
-                ),
-                const SizedBox(height: 8),
-
                 Text('$category • $difficulty'),
-
                 const SizedBox(height: 25),
-
                 Text(
                   '$score / $total',
                   style: const TextStyle(
-                    fontSize: 42,
+                    fontSize: 44,
                     fontWeight: FontWeight.bold,
                     color: Colors.blue,
                   ),
                 ),
-
-                const Text(
-                  'Your Score',
-                  style: TextStyle(color: Colors.grey),
-                ),
-
+                const Text('Your Score'),
                 const SizedBox(height: 12),
-
                 Text(
                   '${percentage.toStringAsFixed(1)}%',
                   style: const TextStyle(
-                    fontSize: 24,
+                    fontSize: 25,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-
-                const SizedBox(height: 25),
-
+                const SizedBox(height: 24),
                 Card(
+                  color: Colors.white,
                   child: Padding(
                     padding: const EdgeInsets.all(20),
                     child: Column(
@@ -574,10 +632,10 @@ class ResultPage extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: 15),
+                        const SizedBox(height: 16),
                         Text('Correct Answers: $score'),
-                        Text('Wrong Answers: $wrongAnswers'),
-                        Text('Skipped Answers: $skippedAnswers'),
+                        Text('Wrong Answers: $wrong'),
+                        Text('Skipped Answers: $skipped'),
                         Text(
                           'Accuracy: '
                               '${percentage.toStringAsFixed(1)}%',
@@ -586,17 +644,15 @@ class ResultPage extends StatelessWidget {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 20),
-
                 SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton.icon(
+                  child: FilledButton.icon(
                     onPressed: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ReviewPage(
+                          builder: (_) => ReviewPage(
                             questions: questions,
                             selectedAnswers: selectedAnswers,
                           ),
@@ -607,9 +663,7 @@ class ResultPage extends StatelessWidget {
                     label: const Text('Review Answers'),
                   ),
                 ),
-
                 const SizedBox(height: 12),
-
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
@@ -632,7 +686,7 @@ class ResultPage extends StatelessWidget {
   }
 }
 
-// ANSWER REVIEW PAGE
+// REVIEW ANSWERS
 class ReviewPage extends StatelessWidget {
   final List<QuizQuestion> questions;
   final List<int?> selectedAnswers;
@@ -661,15 +715,8 @@ class ReviewPage extends StatelessWidget {
               final isCorrect =
                   selected == question.correctAnswer;
 
-              final selectedText = selected == null
-                  ? 'Not Answered'
-                  : question.options[selected];
-
-              final correctText =
-              question.options[question.correctAnswer];
-
               return Card(
-                margin: const EdgeInsets.only(bottom: 15),
+                margin: const EdgeInsets.only(bottom: 14),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -684,48 +731,31 @@ class ReviewPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 12),
-
                       Text(
-                        'Your Answer: $selectedText',
+                        'Your Answer: '
+                            '${selected == null ? "Not Answered" : question.options[selected]}',
                         style: TextStyle(
                           color: isCorrect
                               ? Colors.green
                               : Colors.red,
                         ),
                       ),
-
                       const SizedBox(height: 6),
-
                       Text(
-                        'Correct Answer: $correctText',
+                        'Correct Answer: '
+                            '${question.options[question.correctAnswer]}',
                         style: const TextStyle(
                           color: Colors.green,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-
                       const SizedBox(height: 8),
-
-                      Row(
-                        children: [
-                          Icon(
-                            isCorrect
-                                ? Icons.check_circle
-                                : Icons.cancel,
-                            color: isCorrect
-                                ? Colors.green
-                                : Colors.red,
-                            size: 20,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            isCorrect
-                                ? 'Correct'
-                                : selected == null
-                                ? 'Skipped'
-                                : 'Incorrect',
-                          ),
-                        ],
+                      Text(
+                        isCorrect
+                            ? 'Correct'
+                            : selected == null
+                            ? 'Skipped'
+                            : 'Incorrect',
                       ),
                     ],
                   ),
