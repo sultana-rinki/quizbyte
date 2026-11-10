@@ -45,7 +45,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final nameController = TextEditingController();
 
-  String selectedCategory = 'Sports';
+  String selectedCategory = 'General Knowledge';
   String selectedDifficulty = 'Easy';
 
   final categories = [
@@ -56,7 +56,7 @@ class _HomePageState extends State<HomePage> {
     'Mathematics',
   ];
 
-  final difficulties = ['Easy', 'Medium', 'Hard','Extreme',];
+  final difficulties = ['Easy', 'Medium', 'Hard'];
 
   @override
   void dispose() {
@@ -226,7 +226,7 @@ class _HomePageState extends State<HomePage> {
                               color: Colors.blue,
                             ),
                             SizedBox(width: 8),
-                            Text('Quiz Duration: 3 minutes'),
+                            Text('Quiz Duration: 5 minutes'),
                           ],
                         ),
                         const SizedBox(height: 24),
@@ -279,7 +279,7 @@ class QuizPage extends StatefulWidget {
 }
 
 class _QuizPageState extends State<QuizPage> {
-  static const int quizDuration = 180;
+  static const int quizDuration = 300;
 
   int currentQuestion = 0;
   int remainingSeconds = quizDuration;
