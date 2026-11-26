@@ -11,6 +11,7 @@ import 'data/technology_questions.dart';
 import 'data/sports_questions.dart';
 import 'data/mathematics_questions.dart';
 import 'screens/about_page.dart';
+import 'screens/score.dart';
 
 void main() {
   runApp(const QuizByteApp());
@@ -119,6 +120,17 @@ class _HomePageState extends State<HomePage> {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         actions: [
+          IconButton(
+            icon: const Icon( Icons.emoji_events),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const ScorePage(),
+                ),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.info_outline),
             tooltip: 'About QuizByte',
