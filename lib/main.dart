@@ -10,6 +10,7 @@ import 'data/science_questions.dart';
 import 'data/technology_questions.dart';
 import 'data/sports_questions.dart';
 import 'data/mathematics_questions.dart';
+import 'screens/about_page.dart';
 
 void main() {
   runApp(const QuizByteApp());
@@ -51,7 +52,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final nameController = TextEditingController();
 
-  String selectedCategory = 'General Knowledge';
+  String selectedCategory = 'Bangla';
   String selectedDifficulty = 'Easy';
 
   final Map<String, List<QuizQuestion>> categoryQuestions = {
@@ -117,6 +118,20 @@ class _HomePageState extends State<HomePage> {
           'QuizByte',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.info_outline),
+            tooltip: 'About QuizByte',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const AboutPage(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Center(
         child: SingleChildScrollView(
