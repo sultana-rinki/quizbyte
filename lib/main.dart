@@ -3,7 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import 'models/quiz_question.dart';
-import 'data/question_bank.dart';
+import 'data/bangla_questions.dart';
+import 'data/english_questions.dart';
+import 'data/gk_questions.dart';
+import 'data/science_questions.dart';
+import 'data/technology_questions.dart';
+import 'data/sports_questions.dart';
+import 'data/mathematics_questions.dart';
 
 void main() {
   runApp(const QuizByteApp());
@@ -48,13 +54,17 @@ class _HomePageState extends State<HomePage> {
   String selectedCategory = 'General Knowledge';
   String selectedDifficulty = 'Easy';
 
-  final categories = [
-    'General Knowledge',
-    'Science',
-    'Technology',
-    'Sports',
-    'Mathematics',
-  ];
+  final Map<String, List<QuizQuestion>> categoryQuestions = {
+    'Bangla': banglaQuestions,
+    'English': englishQuestions,
+    'General Knowledge': gkQuestions,
+    'Science': scienceQuestions,
+    'Technology': technologyQuestions,
+    'Sports': sportsQuestions,
+    'Mathematics': mathematicsQuestions,
+  };
+
+  List<String> get categories => categoryQuestions.keys.toList();
 
   final difficulties = ['Easy', 'Medium', 'Hard'];
 
@@ -76,6 +86,16 @@ class _HomePageState extends State<HomePage> {
       return;
     }
 
+    final questions = categoryQuestions[selectedCategory] ?? [];
+    if (questions.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No questions available in this category yet.'),
+        ),
+      );
+      return;
+    }
+
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -83,6 +103,7 @@ class _HomePageState extends State<HomePage> {
           name: name,
           category: selectedCategory,
           difficulty: selectedDifficulty,
+          questions: List<QuizQuestion>.unmodifiable(questions),
         ),
       ),
     );
@@ -263,6 +284,7 @@ class _HomePageState extends State<HomePage> {
 
 // QUIZ SCREEN
 class QuizPage extends StatefulWidget {
+  final List<QuizQuestion> questions;
   final String name;
   final String category;
   final String difficulty;
@@ -272,6 +294,7 @@ class QuizPage extends StatefulWidget {
     required this.name,
     required this.category,
     required this.difficulty,
+    required this.questions,
   });
 
   @override
@@ -292,7 +315,7 @@ class _QuizPageState extends State<QuizPage> {
   void initState() {
     super.initState();
     selectedAnswers =
-    List<int?>.filled(sampleQuestions.length, null);
+    List<int?>.filled(widget.questions.length, null);
     startTimer();
   }
 
@@ -335,9 +358,9 @@ class _QuizPageState extends State<QuizPage> {
 
     int score = 0;
 
-    for (int i = 0; i < sampleQuestions.length; i++) {
+    for (int i = 0; i < widget.questions.length; i++) {
       if (selectedAnswers[i] ==
-          sampleQuestions[i].correctAnswer) {
+          widget.questions[i].correctAnswer) {
         score++;
       }
     }
@@ -350,7 +373,7 @@ class _QuizPageState extends State<QuizPage> {
           category: widget.category,
           difficulty: widget.difficulty,
           score: score,
-          questions: sampleQuestions,
+          questions: widget.questions,
           selectedAnswers: List<int?>.from(selectedAnswers),
           timeExpired: timeExpired,
         ),
@@ -366,7 +389,7 @@ class _QuizPageState extends State<QuizPage> {
 
   @override
   Widget build(BuildContext context) {
-    final question = sampleQuestions[currentQuestion];
+    final question = widget.questions[currentQuestion];
     final answeredCount =
         selectedAnswers.where((answer) => answer != null).length;
 
@@ -437,7 +460,7 @@ class _QuizPageState extends State<QuizPage> {
                 const SizedBox(height: 20),
                 Text(
                   'Question ${currentQuestion + 1} of '
-                      '${sampleQuestions.length}',
+                      '${widget.questions.length}',
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -446,14 +469,14 @@ class _QuizPageState extends State<QuizPage> {
                 const SizedBox(height: 10),
                 LinearProgressIndicator(
                   value: (currentQuestion + 1) /
-                      sampleQuestions.length,
+                      widget.questions.length,
                   minHeight: 8,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 const SizedBox(height: 10),
                 Text(
                   '$answeredCount of '
-                      '${sampleQuestions.length} answered',
+                      '${widget.questions.length} answered',
                   style: const TextStyle(color: Colors.grey),
                 ),
                 const SizedBox(height: 25),
@@ -505,7 +528,7 @@ class _QuizPageState extends State<QuizPage> {
                       ),
                     const Spacer(),
                     if (currentQuestion <
-                        sampleQuestions.length - 1)
+                        widget.questions.length - 1)
                       FilledButton(
                         onPressed: () {
                           setState(() {
